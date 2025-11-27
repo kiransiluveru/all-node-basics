@@ -3,5 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "lodash": "^4.17.21",
+    "mongoose": "^9.0.0"
+  }
 }
