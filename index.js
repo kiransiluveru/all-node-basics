@@ -1,11 +1,16 @@
 import express from "express";
 import Joi from "joi";
+import authLogger from "./middlewares/authentication.js";
+import reqLogger from "./middlewares/logger.js";
 
 const app = express();
 // Parse JSON request bodies
 app.use(express.json());
 // Parse URL-encoded request bodies
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'))
+app.use(reqLogger);
+app.use(authLogger);
 
 const PORT = 3000;
 
