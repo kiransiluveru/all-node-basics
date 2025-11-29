@@ -2,13 +2,18 @@ import express from "express";
 import Joi from "joi";
 import authLogger from "./middlewares/authentication.js";
 import reqLogger from "./middlewares/logger.js";
+import morgan from "morgan";
+import helmet from 'helmet'
 
 const app = express();
 // Parse JSON request bodies
 app.use(express.json());
 // Parse URL-encoded request bodies
 app.use(express.urlencoded({ extended: true }));
+// static folder files hosting
 app.use(express.static('public'))
+app.use(helmet())
+app.use(morgan('combined'))
 app.use(reqLogger);
 app.use(authLogger);
 
@@ -57,9 +62,7 @@ app.get("/api/courses/:year/:month", (req, res) => {
 
 const courseObjValidationSchema = Joi.object().keys({ name: Joi.string().required().min(3), id: Joi.number().optional() });
 app.post("/api/courses", (req, res) => {
-  console.log(courseObjValidationSchema);
   const validationResult = courseObjValidationSchema.validate(req.body);
-
   console.log("validationResult", validationResult);
   if (validationResult.error) {
     res.status(404).send(validationResult.error.details[0].message);
