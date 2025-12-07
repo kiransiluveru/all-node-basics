@@ -58,26 +58,44 @@ const getCourses = async () => {
   console.log("coursesResponse >>> ", coursesResponse, coursesResponse?.length);
 };
 
-// getCourses();
+const updateWithQueryFirstDocument = async (id) => {
+  const course = await Course.findById(id);
+  if (!course) {
+    console.log("Course not found with given id");
+    return;
+  }
+  try {
+    course.set({ price: 1679, author: "Vishnu Bhagavan", ramki: false });
+    const saved = await course.save();
+    console.log("saved successfully", saved);
+  } catch (e) {
+    console.error("failed to save", e);
+  }
+};
 
+
+
+const getCourseById = async (id) => {
+  const course = await Course.findById(id);
+  console.log("course", course);
+};
+
+const updateBypdateFirst = async () => {
+  const updateResponse = await Course.findByIdAndUpdate("69341f78a4e9b6518f63d6a6", { tags: "pre_requisites", price: 5384, author: "Sri Chandu" });
+  console.log("updateResponse", updateResponse);
+};
+
+const deleteDocument = async (_id) => {
+//   const deleteDocument = await Course.findByIdAndDelete("69341f78a4e9b6518f63d6a6");
+  const deleteDocument = await Course.deleteOne({ _id: _id });
+  console.log("deleteDocument", deleteDocument);
+};
+
+deleteDocument('69341e27ea7ed348a9712e35');
+
+// updateBypdateFirst();
+// getCourseById('69341d1841b470b489adc21d')
+// updateWithQueryFirstDocument("69341d1841b470b489adc21d");
+// getCourses();
 // createCourse();
 
-// {
-//   filter: {
-//     isPublished: true,
-//     tags: {
-//       $in: [
-//         'frontend',
-//         'backend'
-//       ]
-//     }
-//   },
-//   sort: {
-//     price: -1
-//   },
-//   project: {
-//     name: 1,
-//     author: 1,
-//     price: 1
-//   }
-// }
