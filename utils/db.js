@@ -15,11 +15,34 @@ const makeConnection = async () => {
 makeConnection();
 
 const courseSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, required: true, minLength: 3, maxLength: 30 },
   author: String,
-  price: { type: Number, default: 0 },
+  price: {
+    type: Number,
+    default: 0,
+    max: 100000,
+    required: function () {
+      return this.isPublished;
+    },
+  },
+  category: { type: String, enum: ["web", "mobile", "network", "soft_skills", "spiritual"] },
   isPublished: Boolean,
-  tags: [String],
+  tags: {
+    type: Array,
+    validate: { 
+      validator: async function (value) {
+        // we will perform some async operation and check for validation here
+        await new Promise((resolve) =>
+          setTimeout(() => {
+            resolve();
+          }, 3000)
+        );
+        const validationResult = value && value.length > 0;
+        return validationResult
+      },
+      message: "Atleast one tag is required",
+    },
+  },
   date: { type: Date, default: Date.now },
 });
 
@@ -27,15 +50,24 @@ const Course = mongoose.model("Course", courseSchema);
 
 const createCourse = async () => {
   const courseObj = new Course({
-    name: "Javascript",
-    author: "SKK",
-    isPublished: false,
-    tags: ["frontend", "intermediate"],
-    price: 1200,
-    description: "Some desc of course",
+    name: "Ruby",
+    author: "Naveen",
+    // isPublished: true,
+    tags: [],
+    price: 8352,
+    category: "+++",
+    description: "Java with UI and Backend modules course",
   });
-  const saveResponse = await courseObj.save();
-  console.log("saveResponse >>> ", saveResponse, saveResponse._id);
+  try {
+    const saveResponse = await courseObj.save();
+    console.log("saved successfully >>> ", saveResponse, saveResponse._id);
+  } catch (e) {
+    console.log("error while saving",e.errors);
+    for(let key in e.errors) {
+      console.log("key => ",key, "=>", e.errors[key]?.properties.message)
+    }
+
+  }
 };
 
 const getCourses = async () => {
@@ -73,8 +105,6 @@ const updateWithQueryFirstDocument = async (id) => {
   }
 };
 
-
-
 const getCourseById = async (id) => {
   const course = await Course.findById(id);
   console.log("course", course);
@@ -86,16 +116,15 @@ const updateBypdateFirst = async () => {
 };
 
 const deleteDocument = async (_id) => {
-//   const deleteDocument = await Course.findByIdAndDelete("69341f78a4e9b6518f63d6a6");
+  //   const deleteDocument = await Course.findByIdAndDelete("69341f78a4e9b6518f63d6a6");
   const deleteDocument = await Course.deleteOne({ _id: _id });
   console.log("deleteDocument", deleteDocument);
 };
 
-deleteDocument('69341e27ea7ed348a9712e35');
+// deleteDocument("69341e27ea7ed348a9712e35");
 
 // updateBypdateFirst();
 // getCourseById('69341d1841b470b489adc21d')
 // updateWithQueryFirstDocument("69341d1841b470b489adc21d");
 // getCourses();
-// createCourse();
-
+createCourse();
