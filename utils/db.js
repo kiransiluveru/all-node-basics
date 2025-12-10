@@ -26,10 +26,10 @@ const courseSchema = new mongoose.Schema({
     },
   },
   category: { type: String, enum: ["web", "mobile", "network", "soft_skills", "spiritual"] },
-  isPublished: Boolean,
+  isPublished: { type: Boolean, required: true },
   tags: {
     type: Array,
-    validate: { 
+    validate: {
       validator: async function (value) {
         // we will perform some async operation and check for validation here
         await new Promise((resolve) =>
@@ -38,7 +38,7 @@ const courseSchema = new mongoose.Schema({
           }, 3000)
         );
         const validationResult = value && value.length > 0;
-        return validationResult
+        return validationResult;
       },
       message: "Atleast one tag is required",
     },
@@ -62,33 +62,32 @@ const createCourse = async () => {
     const saveResponse = await courseObj.save();
     console.log("saved successfully >>> ", saveResponse, saveResponse._id);
   } catch (e) {
-    console.log("error while saving",e.errors);
-    for(let key in e.errors) {
-      console.log("key => ",key, "=>", e.errors[key]?.properties.message)
+    console.log("error while saving", e.errors);
+    for (let key in e.errors) {
+      console.log("key => ", key, "=>", e.errors[key]?.properties.message);
     }
-
   }
 };
 
-const getCourses = async () => {
-  // .find({ price :{ $gte : 100}, isPublished: false })
-  // .find({ price :{ $in : [1000, 500, 1200]}})
-  // { $or: [ { price: { $gte :500 }}, { isPublished: false}]}
-  // { $or: [ { price: { $gte :500 }}, { isPublished: false}]}
-  // find({ author: /.*ramesh.*/i })
+// const getCourses = async () => {
+//   // .find({ price :{ $gte : 100}, isPublished: false })
+//   // .find({ price :{ $in : [1000, 500, 1200]}})
+//   // { $or: [ { price: { $gte :500 }}, { isPublished: false}]}
+//   // { $or: [ { price: { $gte :500 }}, { isPublished: false}]}
+//   // find({ author: /.*ramesh.*/i })
 
-  //   { tags: {$in: ["backend"]}} ==== { tags: "backend" }
-  // {isPublished: true, $or: [ {tags: "frontend"}, {tags: "backend"} ] }
+//   //   { tags: {$in: ["backend"]}} ==== { tags: "backend" }
+//   // {isPublished: true, $or: [ {tags: "frontend"}, {tags: "backend"} ] }
 
-  const pageNumber = 1;
-  const pageSize = 15;
-  const coursesResponse = await Course.find({ price: { $gte: 0 }, name: /.*ker.*/i });
+//   const pageNumber = 1;
+//   const pageSize = 15;
+//   const coursesResponse = await Course.find({ price: { $gte: 0 }, name: /.*ker.*/i });
 
-  // .skip((pageNumber - 1) * pageSize)
-  // .limit(pageSize);
-  // .sort({ name: "desc" });
-  console.log("coursesResponse >>> ", coursesResponse, coursesResponse?.length);
-};
+//   // .skip((pageNumber - 1) * pageSize)
+//   // .limit(pageSize);
+//   // .sort({ name: "desc" });
+//   console.log("coursesResponse >>> ", coursesResponse, coursesResponse?.length);
+// };
 
 const updateWithQueryFirstDocument = async (id) => {
   const course = await Course.findById(id);
@@ -105,10 +104,10 @@ const updateWithQueryFirstDocument = async (id) => {
   }
 };
 
-const getCourseById = async (id) => {
-  const course = await Course.findById(id);
-  console.log("course", course);
-};
+// const getCourseById = async (id) => {
+//   const course = await Course.findById(id);
+//   console.log("course", course);
+// };
 
 const updateBypdateFirst = async () => {
   const updateResponse = await Course.findByIdAndUpdate("69341f78a4e9b6518f63d6a6", { tags: "pre_requisites", price: 5384, author: "Sri Chandu" });
@@ -127,4 +126,5 @@ const deleteDocument = async (_id) => {
 // getCourseById('69341d1841b470b489adc21d')
 // updateWithQueryFirstDocument("69341d1841b470b489adc21d");
 // getCourses();
-createCourse();
+// createCourse();
+export default { Course: Course };
