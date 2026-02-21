@@ -1,47 +1,38 @@
 import { Router } from "express";
 import Joi from "joi";
-import db from "../utils/db.js";
+import Course from "../schemas/course.js";
 const router = Router();
 
-const courses = [
-  { id: 1, name: "React" },
-  { id: 2, name: "Angular" },
-  { id: 3, name: "NodeJS" },
-  { id: 4, name: "Devops" },
-];
-
-// const courseObjValidationSchema = Joi.object().keys({ name: Joi.string().required().min(3), id: Joi.number().optional() });
-
-// list of courses
 router.get("/", async (req, res) => {
-  const { params, path, query } = req;
-  const coursesResponse = await db.Course.find({});
+  const coursesResponse = await Course.find({});
   res.send(coursesResponse);
 });
 
+const paramsSchema = Joi.object({ id: Joi.string().length(24).hex().required() });
 // get the course by id
 router.get("/:id", async (req, res) => {
   const { params } = req;
-  const course = await db.Course.findById(params.id);
-  if (!course) {
-    return res.status(404).send("Course with given ID not found!!!");
+  const { error } = paramsSchema.validate(req.params);
+  if (error) {
+    return res.status(400).json({ message: "Invalid course ID" });
   }
-  res.send({ course, message: "Fetched course details successfully" });
+  try {
+    const course = await Course.findById(params.id);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found with given ID" });
+    }
+    res.json({ course, message: "Fetched course details successfully" });
+  } catch (e) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
-// router.get("/:year/:month", (req, res) => {
-//   const { params, path, query } = req;
-//   console.log("params", params, path, query);
-//   res.send({ Year: params.year, Month: params.month, query: req.query });
-// });
-
-// Create course
 router.post("/", async (req, res) => {
   const newCourse = { ...req.body };
-  const courseObj = new db.Course({ ...newCourse });
+  const courseObj = new Course({ ...newCourse });
   try {
     const saveResponse = await courseObj.save();
-    res.status(201).send({data: saveResponse, message: "Course Created Successfully" });
+    res.status(201).send({ data: saveResponse, message: "Course Created Successfully" });
   } catch (e) {
     // console.log("error while saving", e.errors);
     res.status(400).send(e.message);
@@ -52,7 +43,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const { id: courseId } = req.params;
   console.log("courseId", courseId, req.body);
-  const course = await db.Course.findById(courseId);
+  const course = await Course.findById(courseId);
   if (!course) {
     console.log("Course not found with given id");
     res.status(404).send("Course with given id not found, try with other id");
@@ -73,16 +64,18 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  const matchedIndex = courses.findIndex((obj) => String(obj.id) === id);
-  if (matchedIndex === -1) {
-    res.status(404).send("course with given id not found to delete");
-    return;
+  try {
+    const deleteDocument = await Course.findByIdAndDelete(id);
+    if (deleteDocument) {
+      res.send({ course: deleteDocument, message: "Deleted successfully" });
+      return;
+    }
+    res.status(404).send({ message: "Course with given id not found" });
+  } catch (e) {
+    res.status(500).send({ message: e.message });
   }
-  const courseDeleted = courses[matchedIndex];
-  courses.splice(matchedIndex, 1);
-  res.send({ course: courseDeleted, message: "Deleted successfully " });
 });
 
 export default router;

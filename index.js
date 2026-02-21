@@ -9,6 +9,8 @@ import debug from "debug";
 const startUpDebugger = debug("app:startup");
 const dbDebugger = debug("app:db");
 import courseRouter from "./routes/courses.js";
+import userRouter from "./routes/users.js";
+
 import "./utils/db.js";
 
 const app = express();
@@ -46,10 +48,13 @@ if (developmentEnv) {
 // 404 resource not found
 // 200 success
 // 201 resource created successfully
+// 504 gateway timeout
+// 500 internal server error
+// 401 unauthorized
 
 app.use("/api/courses", courseRouter);
-// app.route()
-
+app.use("/api/users", userRouter)
+console.log("ABD")
 app.listen(PORT, () => {
   startUpDebugger(`listening on ${PORT}`);
 });
