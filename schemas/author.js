@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
-const authorSchema = new mongoose.Schema({
-  name: { type: Schema.Types.String },
+export const authorSchema = new mongoose.Schema({
+  name: { type: Schema.Types.String , required: true},
 });
 
 export const Author = mongoose.model("Author", authorSchema);

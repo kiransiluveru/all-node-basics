@@ -1,13 +1,15 @@
 import mongoose, { SchemaTypes } from "mongoose";
-
+import { authorSchema } from "./author.js";
 
 const course = new mongoose.Schema(
   {
     name: { type: String, required: true, minLength: 3, maxLength: 30 },
-    author: {
-      ref: 'Author',
-      type: SchemaTypes.ObjectId
-    },
+    // author: {
+    //   ref: 'Author',
+    //   type: SchemaTypes.ObjectId
+    // },
+    // 
+    author: [{type: authorSchema, required:[true, "Author info is required, Please provide"]}],
     price: {
       type: Number,
       default: 0,
