@@ -2,11 +2,12 @@ import { Router } from "express";
 import Joi from "joi";
 import User from "../schemas/user.js";
 import mongoose from "mongoose";
+import { userInfoValidateSchema } from "../utils/validators.js";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
-    console.log("mongoose.modelnames", mongoose.modelNames())
+  console.log("mongoose.modelnames", mongoose.modelNames());
   const usersResponse = await User.find({});
   res.send(usersResponse);
 });
@@ -33,11 +34,19 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const newUser = { ...req.body };
-  const userObj = new User({ ...newUser });
+  const { error, value, warning } = userInfoValidateSchema.validate(newUser);
+  if (error) {
+    res.status(400).send({ message: "Invalid request", error: error.details[0].message });
+  }
+  const userObj = new User({ ...value });
   try {
     const saveResponse = await userObj.save();
     res.status(201).send({ data: saveResponse, message: "User Created Successfully" });
   } catch (e) {
+    console.log("e", e);
+    if (e.code === 11000) {
+      res.status(400).send("User with this email already exists.");
+    }
     res.status(400).send(e.message);
   }
 });
@@ -61,6 +70,11 @@ router.put("/:id", async (req, res) => {
 // Delete
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "User with given id not found" });
+  }
+
   try {
     const deleteDocument = await User.findByIdAndDelete(id);
     if (deleteDocument) {

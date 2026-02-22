@@ -1,10 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { SchemaTypes } from "mongoose";
 
 
 const course = new mongoose.Schema(
   {
     name: { type: String, required: true, minLength: 3, maxLength: 30 },
-    author: String,
+    author: {
+      ref: 'Author',
+      type: SchemaTypes.ObjectId
+    },
     price: {
       type: Number,
       default: 0,

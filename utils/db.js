@@ -12,4 +12,8 @@ const makeConnection = async () => {
   }
 };
 
-makeConnection();
+await makeConnection();
+
+const gainInsightDb = mongoose.connection.getClient().db("gaininsight");
+
+await gainInsightDb.collection("users").createIndex({ email: 1 }, { unique: true });
