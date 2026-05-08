@@ -37,7 +37,7 @@ userSchema.methods.generateJwtToken = function () {
     name: this.name,
     email: this.email,
   };
-  return jsonwebtoken.sign(payload, config.get("jwt_secret_key"));
+  return jsonwebtoken.sign(payload, config.get("jwt_secret_key"), { expiresIn: "1h" });
 };
 
 const User = mongoose.model("User", userSchema);

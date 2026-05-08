@@ -4,8 +4,9 @@ import Course from "../schemas/course.js";
 const router = Router();
 
 router.get("/", async (req, res) => {
+  console.log("req.user", req.user);
   const coursesResponse = await Course.find({});
-  res.send(coursesResponse);
+  return res.send(coursesResponse);
 });
 
 const paramsSchema = Joi.object({ id: Joi.string().length(24).hex().required() });

@@ -1,6 +1,5 @@
 import express from "express";
 import Joi from "joi";
-import authLogger from "./middlewares/authentication.js";
 import reqLogger from "./middlewares/logger.js";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -11,6 +10,7 @@ const dbDebugger = debug("app:db");
 import courseRouter from "./routes/courses.js";
 import userRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
+import withProtected from "./middlewares/withProtected.js";
 
 import "./utils/db.js";
 
@@ -26,7 +26,6 @@ app.use(express.static("public"));
 app.use(helmet());
 // custom middlewares
 app.use(reqLogger);
-app.use(authLogger);
 
 const PORT = 3000;
 
@@ -59,8 +58,9 @@ if (developmentEnv) {
 // 504 gateway timeout
 // 500 internal server error
 // 401 unauthorized
+// 403 forbidden
 
-app.use("/api/courses", courseRouter);
+app.use("/api/courses", withProtected, courseRouter);
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 
