@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { userInfoValidateSchema } from "../utils/validators.js";
 import bcrypt from "bcrypt";
 import _ from "lodash";
+import config from "config";
 import jsonwebtoken from "jsonwebtoken";
 
 const router = Router();
@@ -48,12 +49,10 @@ router.post("/", async (req, res) => {
   const userObj = new User({ ...validatedUser });
   try {
     const saveResponse = await userObj.save();
-
     const userData = { ..._.pick(saveResponse, ["name", "email", "_id"]), role: "Admin" };
-
-    jsonwebtoken.sign(userData,);
-
-    res.status(201).send({ data: _.pick(saveResponse, ["name", "email", "_id"]), message: "User Created Successfully" });
+    const secretKey = config.get("jwt_secret_key");
+    const token = jsonwebtoken.sign(userData, secretKey);
+    res.header("x-auth-token", token).status(201).send({ data: token, message: "User Created Successfully" });
   } catch (e) {
     console.log("e", e);
     if (e.code === 11000) {

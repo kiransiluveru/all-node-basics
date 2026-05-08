@@ -37,6 +37,13 @@ startUpDebugger("process.env.NODE_ENV", process.env.NODE_ENV);
 startUpDebugger("App Name", config.get("name"));
 startUpDebugger("mail-server", config.get("mail.host"));
 startUpDebugger("mail-server", config.get("mail.password"));
+startUpDebugger("mail-server", config.get("mail.password"));
+console.log("jwt_secret_key", config.get("jwt_secret_key"));
+const jwt_key = config.get("jwt_secret_key");
+if (!jwt_key) {
+  console.error("FATAL ERROR NO JWT KEY PROVIDED");
+}
+startUpDebugger("jwtkey", config.get("jwt_secret_key"));
 
 dbDebugger("Connection Established ...........");
 
@@ -57,7 +64,7 @@ app.use("/api/courses", courseRouter);
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 
-console.log("ABD")
+console.log("ABD");
 app.listen(PORT, () => {
   startUpDebugger(`listening on ${PORT}`);
 });
