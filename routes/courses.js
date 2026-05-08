@@ -49,11 +49,6 @@ router.put("/:id", async (req, res) => {
     res.status(404).send("Course with given id not found, try with other id");
   }
   try {
-    // const validationResult = courseObjValidationSchema.validate(req.body);
-    // if (validationResult.error) {
-    //   res.status(400).send(validationResult.error.details[0].message);
-    //   return;
-    // }
     course.set(req.body);
     const saved = await course.save();
     res.status(200).send({ data: req.body, message: "course updated successfully" });

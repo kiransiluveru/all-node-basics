@@ -10,6 +10,7 @@ const startUpDebugger = debug("app:startup");
 const dbDebugger = debug("app:db");
 import courseRouter from "./routes/courses.js";
 import userRouter from "./routes/users.js";
+import authRouter from "./routes/auth.js";
 
 import "./utils/db.js";
 
@@ -53,7 +54,9 @@ if (developmentEnv) {
 // 401 unauthorized
 
 app.use("/api/courses", courseRouter);
-app.use("/api/users", userRouter)
+app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
+
 console.log("ABD")
 app.listen(PORT, () => {
   startUpDebugger(`listening on ${PORT}`);

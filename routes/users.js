@@ -1,8 +1,11 @@
 import { Router } from "express";
 import Joi from "joi";
-import User from "../schemas/user.js";
+import User, { validateUser } from "../schemas/user.js";
 import mongoose from "mongoose";
 import { userInfoValidateSchema } from "../utils/validators.js";
+import bcrypt from "bcrypt";
+import _ from "lodash";
+import jsonwebtoken from "jsonwebtoken";
 
 const router = Router();
 
@@ -34,14 +37,23 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const newUser = { ...req.body };
-  const { error, value, warning } = userInfoValidateSchema.validate(newUser);
+  // const { error, value } = userInfoValidateSchema.validate(newUser);
+  const { error, value: validatedUser } = validateUser(newUser);
   if (error) {
-    res.status(400).send({ message: "Invalid request", error: error.details[0].message });
+    return res.status(400).send({ message: "Invalid request", error: error.details[0].message });
   }
-  const userObj = new User({ ...value });
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(validatedUser.password, salt);
+  validatedUser.password = hash;
+  const userObj = new User({ ...validatedUser });
   try {
     const saveResponse = await userObj.save();
-    res.status(201).send({ data: saveResponse, message: "User Created Successfully" });
+
+    const userData = { ..._.pick(saveResponse, ["name", "email", "_id"]), role: "Admin" };
+
+    jsonwebtoken.sign(userData,);
+
+    res.status(201).send({ data: _.pick(saveResponse, ["name", "email", "_id"]), message: "User Created Successfully" });
   } catch (e) {
     console.log("e", e);
     if (e.code === 11000) {

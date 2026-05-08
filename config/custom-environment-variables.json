@@ -2,5 +2,6 @@
   "name": "App-[default]",
   "mail": {
     "password": "mail_server_password"
-  }
+  },
+  "jwtsecretKey": "jwt_secret_key"
 }
