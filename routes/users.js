@@ -42,11 +42,11 @@ router.post("/", async (req, res) => {
   if (error) {
     return res.status(400).send({ message: "Invalid request", error: error.details[0].message });
   }
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(validatedUser.password, salt);
-  validatedUser.password = hash;
-  const userObj = new User({ ...validatedUser });
   try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(validatedUser.password, salt);
+    validatedUser.password = hash;
+    const userObj = new User({ ...validatedUser });
     const saveResponse = await userObj.save();
     const userData = { ..._.pick(saveResponse, ["name", "email", "_id"]), role: "Admin" };
     const token = userObj.generateJwtToken();
