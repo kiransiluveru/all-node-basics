@@ -1,6 +1,7 @@
 {
   "name": "App-[default]",
   "mail": {
-    "host": "default-mail-server"
+    "host": "default-mail-server",
+    "password": "default-mail-password"
   }
 }

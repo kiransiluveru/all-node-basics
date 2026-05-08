@@ -1,6 +1,8 @@
 {
   "name": "App-[production]",
   "mail": {
-    "host": "prod-mail-server"
-  }
+    "host": "prod-mail-server",
+    "password": "prod-mail-password"
+  },
+  "jwt_secret_key": "jwt_secret_key"
 }

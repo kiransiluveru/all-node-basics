@@ -38,7 +38,6 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const newUser = { ...req.body };
-  // const { error, value } = userInfoValidateSchema.validate(newUser);
   const { error, value: validatedUser } = validateUser(newUser);
   if (error) {
     return res.status(400).send({ message: "Invalid request", error: error.details[0].message });
@@ -50,15 +49,13 @@ router.post("/", async (req, res) => {
   try {
     const saveResponse = await userObj.save();
     const userData = { ..._.pick(saveResponse, ["name", "email", "_id"]), role: "Admin" };
-    const secretKey = config.get("jwt_secret_key");
-    const token = jsonwebtoken.sign(userData, secretKey);
-    res.header("x-auth-token", token).status(201).send({ data: token, message: "User Created Successfully" });
+    const token = userObj.generateJwtToken();
+    return res.header("x-access-token", token).status(201).send({ token: token, message: "User registered successfully" });
   } catch (e) {
-    console.log("e", e);
     if (e.code === 11000) {
-      res.status(400).send("User with this email already exists.");
+      return res.status(400).send("User with this email already exists.");
     }
-    res.status(400).send(e.message);
+    return res.status(400).send(e.message);
   }
 });
 
