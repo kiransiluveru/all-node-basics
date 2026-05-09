@@ -47,29 +47,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
-  const newUser = { ...req.body };
-  const { error, value: validatedUser } = validateUser(newUser);
-  if (error) {
-    return res.status(400).send({ message: "Invalid request", error: error.details[0].message });
-  }
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(validatedUser.password, salt);
-    validatedUser.password = hash;
-    const userObj = new User({ ...validatedUser });
-    const saveResponse = await userObj.save();
-    const userData = { ..._.pick(saveResponse, ["name", "email", "_id"]), role: "Admin" };
-    const token = userObj.generateJwtToken();
-    return res.header("x-access-token", token).status(201).send({ token: token, message: "User registered successfully" });
-  } catch (e) {
-    if (e.code === 11000) {
-      return res.status(400).send("User with this email already exists.");
-    }
-    return res.status(400).send(e.message);
-  }
-});
-
 // Update
 router.put("/:id", async (req, res) => {
   const { id: userId } = req.params;
