@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { SchemaTypes } from "mongoose";
 import Joi from "joi";
 import jsonwebtoken from "jsonwebtoken";
 import config from "config";
+import _ from "lodash";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -29,14 +30,14 @@ const userSchema = new mongoose.Schema({
       message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
     },
   },
+  isAdmin: {
+    type: SchemaTypes.Boolean,
+    default: false,
+  },
 });
 
 userSchema.methods.generateJwtToken = function () {
-  const payload = {
-    _id: this._id,
-    name: this.name,
-    email: this.email,
-  };
+  const payload = { ..._.pick(this, ["name", "email", "_id", "isAdmin"]) };
   return jsonwebtoken.sign(payload, config.get("jwt_secret_key"), { expiresIn: 3600 });
 };
 
@@ -54,6 +55,7 @@ export function validateUser(user) {
       .messages({
         "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
       }),
+    isAdmin: Joi.boolean().optional(),
     age: Joi.number().optional(),
   });
 

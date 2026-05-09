@@ -1,6 +1,5 @@
+
 import { Router } from "express";
-import mongoose from "mongoose";
-import Joi from "joi";
 import bcrypt from "bcrypt";
 import _ from "lodash";
 
@@ -23,7 +22,7 @@ router.post("/register", async (req, res) => {
     const saveResponse = await userObj.save();
     const userData = { ..._.pick(saveResponse, ["name", "email", "_id"]), role: "Admin" };
     const token = userObj.generateJwtToken();
-    return res.header("x-access-token", token).status(201).send({ token: token, message: "User registered successfully" });
+    return res.header("x-access-token", token).status(201).send({ token, message: "User registered successfully" });
   } catch (e) {
     if (e.code === 11000) {
       return res.status(400).send("User with this email already exists.");
@@ -34,6 +33,7 @@ router.post("/register", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const credentials = { ...req.body };
+
   const { error, value: validatedUser } = validateLogin(credentials);
   console.log("validation failed", error);
   if (error) {
@@ -43,7 +43,6 @@ router.post("/", async (req, res) => {
 
   try {
     const findResp = await User.findOne({ email: credentials.email });
-    console.log("findResp", findResp);
     if (!findResp) {
       return res.status(401).send({ message: "Invalid email or password" });
     }

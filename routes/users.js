@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import _ from "lodash";
 import config from "config";
 import jsonwebtoken from "jsonwebtoken";
+import hasAdminAccess from "../middlewares/admin.js";
 
 const router = Router();
 
@@ -64,7 +65,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [hasAdminAccess], async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
