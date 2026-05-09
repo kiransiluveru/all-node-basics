@@ -61,7 +61,7 @@ if (developmentEnv) {
 // 403 forbidden
 
 app.use("/api/courses", withProtected, courseRouter);
-app.use("/api/users", userRouter);
+app.use("/api/users", withProtected, userRouter);
 app.use("/api/auth", authRouter);
 
 console.log("ABD");

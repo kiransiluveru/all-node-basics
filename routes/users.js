@@ -11,9 +11,19 @@ import jsonwebtoken from "jsonwebtoken";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  console.log("mongoose.modelnames", mongoose.modelNames());
   const usersResponse = await User.find({});
   res.send(usersResponse);
+});
+
+router.get("/me", async (req, res) => {
+  const profileId = req.user?._id;
+  try {
+    const profileInfo = await User.findById(profileId);
+    const afterOmit = _.omit(profileInfo.toObject(), ["password"]);
+    res.status(200).send({ ...afterOmit });
+  } catch (error) {
+    return res.status(400).send({ message: "Failed to get profile info" });
+  }
 });
 
 const paramsSchema = Joi.object({ id: Joi.string().length(24).hex().required() });
@@ -30,7 +40,8 @@ router.get("/:id", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found with given ID" });
     }
-    res.json({ user, message: "Fetched user details successfully" });
+    const afterOmit = _.omit(user.toObject(), ["password"]);
+    return res.status(200).json({ user: afterOmit, message: "Fetched user details successfully" });
   } catch (e) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -86,7 +97,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const deleteDocument = await User.findByIdAndDelete(id);
     if (deleteDocument) {
-      res.send({ user: deleteDocument, message: "Deleted successfully" });
+      res.send({ user: _.pick(deleteDocument.toObject(), ["_id", "email"]), message: "Deleted successfully" });
       return;
     }
     res.status(404).send({ message: "User with given id not found" });

@@ -29,7 +29,8 @@ router.post("/", async (req, res) => {
     if (!match) {
       return res.status(401).send({ message: "Invalid email or password" });
     }
-    return res.status(200).send({ message: "Authentication successful" });
+    const token = findResp.generateJwtToken();
+    return res.header("x-access-token", token).status(200).send({ token, message: "Authentication successful" });
   } catch (e) {
     console.log("e", e);
     return res.status(401).send({ message: "Invalid email or password" });
