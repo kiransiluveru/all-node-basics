@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-
+import logger from "./logger.js";
 const DB_URL = "localhost:27017";
 const DB_CONNECTION_URL = `mongodb://${DB_URL}/gaininsight`;
 
 const makeConnection = async () => {
   try {
     await mongoose.connect(DB_CONNECTION_URL);
-    console.log("Mongoose connection is successful");
+    logger.info("Mongoose connection is successful");
   } catch (e) {
-    console.log("Error while Connecting to DB", e);
+    logger.error("Error while Connecting to DB", e);
   }
 };
 

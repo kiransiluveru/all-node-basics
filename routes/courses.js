@@ -1,10 +1,11 @@
 import { Router } from "express";
 import Joi from "joi";
 import Course from "../schemas/course.js";
+import logger from "../utils/logger.js";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  console.log("req.user", req.user);
+  logger.info("req.user", { user: req.user });
   const coursesResponse = await Course.find({});
   return res.send(coursesResponse);
 });
@@ -43,10 +44,10 @@ router.post("/", async (req, res) => {
 // Update
 router.put("/:id", async (req, res) => {
   const { id: courseId } = req.params;
-  console.log("courseId", courseId, req.body);
+  logger.info("course update request", { courseId, body: req.body });
   const course = await Course.findById(courseId);
   if (!course) {
-    console.log("Course not found with given id");
+    logger.warn("Course not found with given id", { courseId });
     res.status(404).send("Course with given id not found, try with other id");
   }
   try {
@@ -55,7 +56,7 @@ router.put("/:id", async (req, res) => {
     res.status(200).send({ data: req.body, message: "course updated successfully" });
   } catch (e) {
     res.status(500).send(e.message);
-    console.error("failed to save", e);
+    logger.error("failed to save", e);
   }
 });
 

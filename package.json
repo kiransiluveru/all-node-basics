@@ -13,10 +13,12 @@
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "winston": "^3.19.0",
+    "winston-mongodb": "^7.0.1"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^8.57.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.32.0",
