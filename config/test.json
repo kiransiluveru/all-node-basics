@@ -1,0 +1,9 @@
+{
+  "name": "App-[test]",
+  "mail": {
+    "host": "testing-mail-server",
+    "password": "testing-mail-password"
+  },
+  "jwt_secret_key": "12345",
+  "db_url": "mongodb://localhost:27017/gaininsight_tests"
+}

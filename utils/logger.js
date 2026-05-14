@@ -2,12 +2,15 @@ import winston from "winston";
 import "winston-mongodb";
 import path from "path";
 import { fileURLToPath } from "url";
+import config from "config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const logFilePath = path.join(__dirname, "../logs.log");
 
-const mongoDbUri = process.env.MONGODB_URI || "mongodb://localhost:27017/gaininsight";
+const mongoDbUri = config.get("db_url");
+const isTestEnv = process.env.NODE_ENV === "test";
+const collectionName = isTestEnv ? "test_logs" : "app_logs";
 
 const logger = winston.createLogger({
   level: "info",
@@ -22,7 +25,7 @@ const logger = winston.createLogger({
       level: "error",
       db: mongoDbUri,
       options: { useUnifiedTopology: true },
-      collection: "app_logs",
+      collection: collectionName,
       tryReconnect: true,
       format: winston.format.combine(
         winston.format.timestamp(),

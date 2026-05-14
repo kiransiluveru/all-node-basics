@@ -3,5 +3,6 @@
   "mail": {
     "host": "development-mail-server",
     "password": "development-mail-password"
-  }
+  },
+  "db_url": "mongodb://localhost:27017/gaininsight"
 }

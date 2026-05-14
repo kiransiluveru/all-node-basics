@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "all-node-basics": "file:",
     "bcrypt": "^6.0.0",
     "config": "^4.1.1",
     "debug": "^4.4.3",
@@ -15,6 +16,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",
     "morgan": "^1.10.1",
+    "supertest": "^7.2.2",
     "winston": "^3.19.0",
     "winston-mongodb": "^7.0.1"
   },
@@ -22,6 +24,8 @@
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.5",
     "@eslint/js": "^8.57.0",
+    "babel-jest": "^30.4.1",
+    "cross-env": "^10.1.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.32.0",
@@ -31,6 +35,9 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest"
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
