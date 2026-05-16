@@ -65,12 +65,13 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const deleteDocument = await Course.findByIdAndDelete(id);
+    console.log("deleteDocument", deleteDocument, Boolean(deleteDocument))
     if (deleteDocument) {
-      res.send({ course: deleteDocument, message: "Deleted successfully" });
-      return;
+      return res.status(200).send({ course: deleteDocument, message: "Deleted successfully" });
     }
-    res.status(404).send({ message: "Course with given id not found" });
+    return res.status(404).send({ message: "Course with given id not found" });
   } catch (e) {
+    console.log("e", e)
     res.status(500).send({ message: e.message });
   }
 });
